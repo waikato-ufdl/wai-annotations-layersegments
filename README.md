@@ -1,6 +1,10 @@
 # wai-annotations-layersegments
 wai.annotations module that manages image segmentation annotations where layers are stored in separate mask files.
 
+The manual is available here:
+
+https://ufdl.cms.waikato.ac.nz/wai-annotations-manual/
+
 ## Plugins
 ### FROM-LAYER-SEGMENTS-IS
 Reads in the layer-segments image-segmentation format from disk, where each label has a binary PNG storing the mask for that label
