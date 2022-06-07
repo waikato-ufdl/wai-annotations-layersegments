@@ -100,7 +100,11 @@ class FromLayerSegments(
                 selector_array = mask != 0
 
                 # Merge the current index set with the indices from this label
-                annotation.indices = np.where(selector_array, np.uint16(self.label_lookup[label]), annotation.indices)
+                try:
+                    annotation.indices = np.where(selector_array, np.uint16(self.label_lookup[label]), annotation.indices)
+                except Exception as e:
+                    self.logger.error("Failed to process: %s" % element.image.filename)
+                    raise e
 
             then(ImageSegmentationInstance(data_image, annotation))
 
