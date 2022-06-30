@@ -1,5 +1,6 @@
 import os
 from typing import Tuple, Dict
+from PIL import ImageOps
 
 import numpy as np
 
@@ -24,10 +25,14 @@ class FromLayerSegments(
     label has its own binary image mask.
     """
 
-    # A separator to look for/insert between the base filename and the label
     lenient: bool = FlagOption(
         "--lenient",
         help="converts non-binary images with only two unique colors into binary ones rather than throwing an exception"
+    )
+
+    invert: bool = FlagOption(
+        "--invert",
+        help="inverts the colors in the annotations (b/w <-> w/b)"
     )
 
     # Groups from the basename of the data image filename to a map from
@@ -101,6 +106,10 @@ class FromLayerSegments(
                         label_image = label_image.convert('1')
                     else:
                         raise Exception(f"Label image is not binary (mode: %s, # colors: %d)" % (label_image.mode, len(colors)))
+
+                # invert image?
+                if self.invert:
+                    label_image = ImageOps.invert(label_image)
 
                 # Convert the image to 8-bit mode to separate pixels
                 label_image = label_image.convert("L")

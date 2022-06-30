@@ -9,6 +9,8 @@ Changelog
   causing the problem.
 - Added `--lenient` flag to `FromLayerSegments` class which allows conversion of non-binary images with just
   two unique colors to binary ones instead of throwing an error.
+- Added `--invert` flag to `FromLayerSegments` class which allows inverting the colors (b/w <-> w/b) of the
+  binary annotation images.
 
 
 1.0.1 (2022-05-11)
