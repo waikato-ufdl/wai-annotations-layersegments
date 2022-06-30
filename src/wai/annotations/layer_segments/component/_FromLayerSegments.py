@@ -10,6 +10,7 @@ from wai.annotations.domain.image import Image
 from wai.annotations.domain.image.segmentation import ImageSegmentationInstance, ImageSegmentationAnnotation
 from wai.annotations.domain.image.segmentation.util import UnlabelledInputMixin, RelativeDataPathMixin
 from ..util import LabelSeparatorMixin
+from wai.common.cli.options import FlagOption
 
 
 class FromLayerSegments(
@@ -22,6 +23,13 @@ class FromLayerSegments(
     Reads image-segmentation instances from files on disk where each
     label has its own binary image mask.
     """
+
+    # A separator to look for/insert between the base filename and the label
+    lenient: bool = FlagOption(
+        "--lenient",
+        help="converts non-binary images with only two unique colors into binary ones rather than throwing an exception"
+    )
+
     # Groups from the basename of the data image filename to a map from
     # label to label-image filename
     groups: Dict[str, Dict[str, str]] = ProcessState(lambda self: {})
@@ -87,7 +95,12 @@ class FromLayerSegments(
 
                 # The image must be binary
                 if label_image.mode != "1":
-                    raise Exception(f"Label image is not binary ({label_image.mode})")
+                    colors = label_image.getcolors()
+                    if (len(colors) == 2) and self.lenient:
+                        self.logger.warning("Image %s is not in binary format ('1') but '%s' with only two unique colors, converting to binary..." % (label_image_filename, label_image.mode))
+                        label_image = label_image.convert('1')
+                    else:
+                        raise Exception(f"Label image is not binary (mode: %s, # colors: %d)" % (label_image.mode, len(colors)))
 
                 # Convert the image to 8-bit mode to separate pixels
                 label_image = label_image.convert("L")
@@ -103,7 +116,7 @@ class FromLayerSegments(
                 try:
                     annotation.indices = np.where(selector_array, np.uint16(self.label_lookup[label]), annotation.indices)
                 except Exception as e:
-                    self.logger.error("Failed to process: %s" % element.image.filename)
+                    self.logger.error("Failed to process: %s" % label_image_filename)
                     raise e
 
             then(ImageSegmentationInstance(data_image, annotation))

@@ -7,6 +7,8 @@ Changelog
 - `FromLayerSegments` class now outputs logging message if setting of new annotation indices fails, as error
   occurs before the `wai.annotations - Sourced ...` logging message, making it possible to track the image
   causing the problem.
+- Added `--lenient` flag to `FromLayerSegments` class which allows conversion of non-binary images with just
+  two unique colors to binary ones instead of throwing an error.
 
 
 1.0.1 (2022-05-11)
