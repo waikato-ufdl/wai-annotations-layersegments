@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.2 (????-??-??)
+1.0.2 (2022-06-30)
 ------------------
 
 - `FromLayerSegments` class now outputs logging message if setting of new annotation indices fails, as error
